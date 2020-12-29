@@ -1,0 +1,13 @@
+name: IPLogger
+main: iplogger.IPLogger
+version: 1.0
+commands:
+  coords:
+    description: coords
+    usage: /coords
+  bed:
+    description: bed spawn point
+    usage: /bed
+  kill:
+    description: kys
+    usage: /kill

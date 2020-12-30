@@ -19,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class IPLogger extends JavaPlugin implements Listener {
 	
 	int counter = 0;
-	int timeToRestart = 300;
+	int time = 21600;
 	int tenCounter;
 	boolean ten = false;
 	HashMap<String, Boolean> killUsed = new HashMap<>();
@@ -35,18 +35,18 @@ public class IPLogger extends JavaPlugin implements Listener {
 			public void run() {
 				// high quality code!!!!
 				counter++;
-				if(counter == timeToRestart - 300) {
+				if(counter == time - 300) {
 					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "5" + ChatColor.RED + " минут!");
-				} if(counter == timeToRestart - 60) {
+				} if(counter == time - 60) {
 					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "1" + ChatColor.RED + " минуту!");
-				} if(counter == timeToRestart - 30) {
+				} if(counter == time - 30) {
 					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "30" + ChatColor.RED + " секунд!");
-				} if(counter == timeToRestart - 10) {
+				} if(counter == time - 10) {
 					ten = true;
-				} if(counter < timeToRestart && ten == true) {
-					tenCounter -= counter;
+				} if(counter < time && ten == true) {
+					tenCounter = time - counter;
 					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + tenCounter);
-				} if(counter == timeToRestart) {
+				} if(counter == time) {
 					Bukkit.getServer().shutdown();
 				}
 			}

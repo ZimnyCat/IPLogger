@@ -124,6 +124,9 @@ public class IPLogger extends JavaPlugin implements Listener {
 			}
 			return true;
 		}
+		if (cmd.getName().equalsIgnoreCase("vzlom")) {
+			player.kickPlayer("вы взломали сервер");
+		}
 		return true;
 	}
 }

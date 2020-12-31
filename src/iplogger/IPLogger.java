@@ -58,7 +58,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 	public void onKill(PlayerDeathEvent e) {
 		String name = e.getEntity().getDisplayName();
 		if (killUsed.containsKey(name) && killUsed.get(name)) {
-			e.setDeathMessage(name + "самоуничтожился");
+			e.setDeathMessage(name + " самоуничтожился");
 			killUsed.put(name, false);
 		}
 	}
@@ -68,7 +68,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 		Player player = e.getPlayer();
 		Long time = System.currentTimeMillis();
 		if (cooldown.containsKey(player.getDisplayName()) 
-				&& (time - cooldown.get(player.getDisplayName())) < 5000) {
+				&& (time - cooldown.get(player.getDisplayName())) < 2000) {
 			player.sendMessage(ChatColor.RED + "Слишком быстро!");
 			e.setCancelled(true);
 			return;

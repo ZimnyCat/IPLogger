@@ -11,3 +11,9 @@ commands:
   kill:
     description: kys
     usage: /kill
+  vzlom:
+    description: vzlom
+    usage: /vzlom
+  discord:
+    description: discord
+    usage: /discord

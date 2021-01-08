@@ -36,17 +36,18 @@ public class IPLogger extends JavaPlugin implements Listener {
 				// high quality code!!!!
 				counter++;
 				if(counter == time - 300) {
-					Bukkit.broadcastMessage(ChatColor.RED + "РЎРµСЂРІРµСЂ РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЃСЏ С‡РµСЂРµР· " + ChatColor.WHITE + "5" + ChatColor.RED + " РјРёРЅСѓС‚!");
+					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "5" + ChatColor.RED + " минут!");
 				} if(counter == time - 60) {
-					Bukkit.broadcastMessage(ChatColor.RED + "РЎРµСЂРІРµСЂ РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЃСЏ С‡РµСЂРµР· " + ChatColor.WHITE + "1" + ChatColor.RED + " РјРёРЅСѓС‚Сѓ!");
+					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "1" + ChatColor.RED + " минуту!");
 				} if(counter == time - 30) {
-					Bukkit.broadcastMessage(ChatColor.RED + "РЎРµСЂРІРµСЂ РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЃСЏ С‡РµСЂРµР· " + ChatColor.WHITE + "30" + ChatColor.RED + " СЃРµРєСѓРЅРґ!");
+					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "30" + ChatColor.RED + " секунд!");
 				} if(counter == time - 10) {
 					ten = true;
 				} if(counter < time && ten == true) {
 					tenCounter = time - counter;
-					Bukkit.broadcastMessage(ChatColor.RED + "РЎРµСЂРІРµСЂ РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЃСЏ С‡РµСЂРµР· " + ChatColor.WHITE + tenCounter);
+					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + tenCounter);
 				} if(counter == time) {
+					getServer().dispatchCommand(getServer().getConsoleSender(), "save-all");
 					Bukkit.getServer().shutdown();
 				}
 			}
@@ -58,7 +59,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 	public void onKill(PlayerDeathEvent e) {
 		String name = e.getEntity().getDisplayName();
 		if (killUsed.containsKey(name) && killUsed.get(name)) {
-			e.setDeathMessage(name + " СЃР°РјРѕСѓРЅРёС‡С‚РѕР¶РёР»СЃСЏ");
+			e.setDeathMessage(name + " died");
 			killUsed.put(name, false);
 		}
 	}
@@ -69,7 +70,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 		Long time = System.currentTimeMillis();
 		if (cooldown.containsKey(player.getDisplayName()) 
 				&& (time - cooldown.get(player.getDisplayName())) < 2000) {
-			player.sendMessage(ChatColor.RED + "РЎР»РёС€РєРѕРј Р±С‹СЃС‚СЂРѕ!");
+			player.sendMessage(ChatColor.RED + "Слишком быстро!");
 			e.setCancelled(true);
 			return;
 		}
@@ -85,31 +86,31 @@ public class IPLogger extends JavaPlugin implements Listener {
 		}
 		if (cmd.getName().equalsIgnoreCase("coords")) {
 			if (args.length == 0) {
-				sender.sendMessage(ChatColor.GREEN + "/coords chat - РѕС‚РїСЂР°РІРёС‚СЊ РІР°С€Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ С‡Р°С‚");
-				sender.sendMessage(ChatColor.GREEN + "/coords send <РёРіСЂРѕРє> - РѕС‚РїСЂР°РІРёС‚СЊ РІР°С€Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РґСЂСѓРіРѕРјСѓ РёРіСЂРѕРєСѓ");
+				sender.sendMessage(ChatColor.GREEN + "/coords chat - отправить ваши координаты в чат");
+				sender.sendMessage(ChatColor.GREEN + "/coords send <игрок> - отправить ваши координаты другому игроку");
 				return true;
 			}
 			Location loc = player.getLocation();
 			String[] locArray = {" " + loc.getBlockX(), " " + loc.getBlockY(), " " + loc.getBlockZ()};
 			switch (args[0]) {
 			case "chat":
-				Bukkit.broadcastMessage(ChatColor.GREEN + "РљРѕРѕСЂРґРёРЅР°С‚С‹ " + player.getDisplayName() + ":" + locArray[0] + locArray[1] + locArray[2]);
+				Bukkit.broadcastMessage(ChatColor.GREEN + "Координаты " + player.getDisplayName() + ":" + locArray[0] + locArray[1] + locArray[2]);
 				break;
 			case "send":
 				String reciver;
 				try {
 					reciver = args[1];
 				} catch (Exception e) {
-					sender.sendMessage(ChatColor.GREEN + "РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РЅРёРє РёРіСЂРѕРєР°!");
+					sender.sendMessage(ChatColor.GREEN + "Отсутствует ник игрока!");
 					return true;
 				}
 				try {
-					Bukkit.getPlayer(reciver).sendMessage(ChatColor.GREEN + player.getDisplayName() + " РѕС‚РїСЂР°РІРёР» РІР°Рј СЃРІРѕРё РєРѕРѕСЂРґРёРЅР°С‚С‹:" + locArray[0] + locArray[1] + locArray[2]);
+					Bukkit.getPlayer(reciver).sendMessage(ChatColor.GREEN + player.getDisplayName() + " отправил вам свои координаты:" + locArray[0] + locArray[1] + locArray[2]);
 				} catch (Exception e) {
-					sender.sendMessage(ChatColor.GREEN + "РРіСЂРѕРє " + reciver + " РЅРµ РЅР°Р№РґРµРЅ");
+					sender.sendMessage(ChatColor.GREEN + "Игрок " + reciver + " не найден");
 					return true;
 				}
-				sender.sendMessage(ChatColor.GREEN + "Р’Р°С€Рё РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕС‚РїСЂР°РІР»РµРЅС‹ " + reciver);
+				sender.sendMessage(ChatColor.GREEN + "Ваши координаты отправлены " + reciver);
 			return true;
 			}
 		}
@@ -117,15 +118,20 @@ public class IPLogger extends JavaPlugin implements Listener {
 			try {
 				Location bedLoc = player.getBedSpawnLocation();
 				String[] bedLocArray = {" " + bedLoc.getBlockX(), " " + bedLoc.getBlockY(), " " + bedLoc.getBlockZ()};
-				sender.sendMessage(ChatColor.RED + "Р’Р°С€Р° РєСЂРѕРІР°С‚СЊ РЅР°С…РѕРґРёС‚СЃСЏ РЅР° " + ChatColor.GREEN  + bedLocArray[0] + bedLocArray[1] + bedLocArray[2]);
+				sender.sendMessage(ChatColor.RED + "Ваша кровать находится на " + ChatColor.GREEN  + bedLocArray[0] + bedLocArray[1] + bedLocArray[2]);
 			}
 			catch(Exception e) {
-				sender.sendMessage(ChatColor.RED + "Р’Р°С€Р° РєСЂРѕРІР°С‚СЊ РЅРµ РЅР°Р№РґРµРЅР°!");
+				sender.sendMessage(ChatColor.RED + "Ваша кровать не найдена!");
 			}
 			return true;
 		}
 		if (cmd.getName().equalsIgnoreCase("vzlom")) {
-			player.kickPlayer("РІС‹ РІР·Р»РѕРјР°Р»Рё СЃРµСЂРІРµСЂ");
+			player.kickPlayer("вы взломали сервер");
+			return true;
+		}
+		if (cmd.getName().equalsIgnoreCase("discord")) {
+			sender.sendMessage(ChatColor.AQUA + "Discord Server: https://discord.gg/SC5eyRKhRr");
+			return true;
 		}
 		return true;
 	}

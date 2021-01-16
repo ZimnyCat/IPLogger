@@ -1,7 +1,9 @@
 package iplogger;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,8 +24,10 @@ public class IPLogger extends JavaPlugin implements Listener {
 	int time = 21600;
 	int tenCounter;
 	boolean ten = false;
+	
 	HashMap<String, Boolean> killUsed = new HashMap<>();
 	HashMap<String, Long> cooldown = new HashMap<>();
+	List<Player> ignoreList = new ArrayList<>();
 	
 	@Override
 	public void onEnable() {
@@ -73,27 +77,30 @@ public class IPLogger extends JavaPlugin implements Listener {
 			e.setCancelled(true);
 			return;
 		}
-		cooldown.put(player.getDisplayName(), System.currentTimeMillis());
+		cooldown.put(player.getDisplayName(), time);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;
+		
 		if (cmd.getName().equalsIgnoreCase("kill")) {
 			killUsed.put(player.getDisplayName(), true);
 			player.setHealth(0);
 			return true;
 		}
+		
 		if (cmd.getName().equalsIgnoreCase("coords")) {
 			if (args.length == 0) {
 				sender.sendMessage(ChatColor.GREEN + "/coords chat - отправить ваши координаты в чат");
 				sender.sendMessage(ChatColor.GREEN + "/coords send <игрок> - отправить ваши координаты другому игроку");
+				sender.sendMessage(ChatColor.GREEN + "/coords ignore - включить/выключить игнор сообщений от /coords, вызванных другими игроками");
 				return true;
 			}
 			Location loc = player.getLocation();
 			String[] locArray = {" " + loc.getBlockX(), " " + loc.getBlockY(), " " + loc.getBlockZ()};
-			switch (args[0]) {
+			switch (args[0].toLowerCase()) {
 			case "chat":
-				Bukkit.broadcastMessage(ChatColor.GREEN + "Координаты " + player.getDisplayName() + ":" + locArray[0] + locArray[1] + locArray[2]);
+				sendCoordsMsg(ChatColor.GREEN + "Координаты " + player.getDisplayName() + ":" + locArray[0] + locArray[1] + locArray[2], player, true);
 				break;
 			case "send":
 				String reciver;
@@ -104,15 +111,27 @@ public class IPLogger extends JavaPlugin implements Listener {
 					return true;
 				}
 				try {
-					Bukkit.getPlayer(reciver).sendMessage(ChatColor.GREEN + player.getDisplayName() + " отправил вам свои координаты:" + locArray[0] + locArray[1] + locArray[2]);
+					sendCoordsMsg(ChatColor.GREEN + player.getDisplayName() + " отправил вам свои координаты:" + locArray[0] + locArray[1] + locArray[2],
+							Bukkit.getPlayer(reciver), false);
 				} catch (Exception e) {
 					sender.sendMessage(ChatColor.GREEN + "Игрок " + reciver + " не найден");
 					return true;
 				}
 				sender.sendMessage(ChatColor.GREEN + "Ваши координаты отправлены " + reciver);
+				break;
+			case "ignore":
+				if (ignoreList.contains(player)) {
+					ignoreList.remove(player); 
+					sender.sendMessage(ChatColor.GREEN + "Теперь вам будут показываться сообщения от /coords, вызванные другими игроками");
+				}
+				else {
+					ignoreList.add(player);
+					sender.sendMessage(ChatColor.GREEN + "Вам больше не будут показываться сообщения от /coords, вызванные другими игроками");
+				}
 			return true;
 			}
 		}
+		
 		if (cmd.getName().equalsIgnoreCase("bed")) {
 			try {
 				Location bedLoc = player.getBedSpawnLocation();
@@ -124,9 +143,21 @@ public class IPLogger extends JavaPlugin implements Listener {
 			}
 			return true;
 		}
+		
 		if (cmd.getName().equalsIgnoreCase("vzlom")) {
 			player.kickPlayer("вы взломали сервер");
+			return true;
 		}
 		return true;
+	}
+	
+	private void sendCoordsMsg(String msg, Player reciver, boolean broadcast) {
+		if (broadcast == true) {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (ignoreList.contains(player)) continue;
+				player.sendMessage(msg);
+			} return;
+		}
+		if (!ignoreList.contains(reciver)) reciver.sendMessage(msg);
 	}
 }

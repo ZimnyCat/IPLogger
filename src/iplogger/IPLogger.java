@@ -2,21 +2,25 @@ package iplogger;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import iplogger.commands.BedCommand;
+import iplogger.commands.CoordsCommand;
+import iplogger.commands.KillCommand;
+import iplogger.commands.VzlomCommand;
 
 public class IPLogger extends JavaPlugin implements Listener {
 	
@@ -25,9 +29,10 @@ public class IPLogger extends JavaPlugin implements Listener {
 	int tenCounter;
 	boolean ten = false;
 	
-	HashMap<String, Boolean> killUsed = new HashMap<>();
 	HashMap<String, Long> cooldown = new HashMap<>();
 	List<Player> ignoreList = new ArrayList<>();
+	
+	public static List<CommandBase> commands = Arrays.asList(new BedCommand(), new CoordsCommand(), new KillCommand(), new VzlomCommand());
 	
 	@Override
 	public void onEnable() {
@@ -59,14 +64,6 @@ public class IPLogger extends JavaPlugin implements Listener {
 	}
 	
 	@EventHandler
-	public void onKill(PlayerDeathEvent e) {
-		String name = e.getEntity().getDisplayName();
-		if (killUsed.containsKey(name) && killUsed.get(name)) {
-			e.setDeathMessage(name + " самоуничтожился");
-			killUsed.put(name, false);
-		}
-	}
-	@EventHandler
 	public void command(PlayerCommandPreprocessEvent e) {
 		// command cooldown
 		Player player = e.getPlayer();
@@ -81,83 +78,9 @@ public class IPLogger extends JavaPlugin implements Listener {
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
-		Player player = (Player)sender;
-		
-		if (cmd.getName().equalsIgnoreCase("kill")) {
-			killUsed.put(player.getDisplayName(), true);
-			player.setHealth(0);
-			return true;
-		}
-		
-		if (cmd.getName().equalsIgnoreCase("coords")) {
-			if (args.length == 0) {
-				sender.sendMessage(ChatColor.GREEN + "/coords chat - отправить ваши координаты в чат");
-				sender.sendMessage(ChatColor.GREEN + "/coords send <игрок> - отправить ваши координаты другому игроку");
-				sender.sendMessage(ChatColor.GREEN + "/coords ignore - включить/выключить игнор сообщений от /coords, вызванных другими игроками");
-				return true;
-			}
-			Location loc = player.getLocation();
-			String[] locArray = {" " + loc.getBlockX(), " " + loc.getBlockY(), " " + loc.getBlockZ()};
-			switch (args[0].toLowerCase()) {
-			case "chat":
-				sendCoordsMsg(ChatColor.GREEN + "Координаты " + player.getDisplayName() + ":" + locArray[0] + locArray[1] + locArray[2], player, true);
-				break;
-			case "send":
-				String reciver;
-				try {
-					reciver = args[1];
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.GREEN + "Отсутствует ник игрока!");
-					return true;
-				}
-				try {
-					sendCoordsMsg(ChatColor.GREEN + player.getDisplayName() + " отправил вам свои координаты:" + locArray[0] + locArray[1] + locArray[2],
-							Bukkit.getPlayer(reciver), false);
-				} catch (Exception e) {
-					sender.sendMessage(ChatColor.GREEN + "Игрок " + reciver + " не найден");
-					return true;
-				}
-				sender.sendMessage(ChatColor.GREEN + "Ваши координаты отправлены " + reciver);
-				break;
-			case "ignore":
-				if (ignoreList.contains(player)) {
-					ignoreList.remove(player); 
-					sender.sendMessage(ChatColor.GREEN + "Теперь вам будут показываться сообщения от /coords, вызванные другими игроками");
-				}
-				else {
-					ignoreList.add(player);
-					sender.sendMessage(ChatColor.GREEN + "Вам больше не будут показываться сообщения от /coords, вызванные другими игроками");
-				}
-			return true;
-			}
-		}
-		
-		if (cmd.getName().equalsIgnoreCase("bed")) {
-			try {
-				Location bedLoc = player.getBedSpawnLocation();
-				String[] bedLocArray = {" " + bedLoc.getBlockX(), " " + bedLoc.getBlockY(), " " + bedLoc.getBlockZ()};
-				sender.sendMessage(ChatColor.RED + "Ваша кровать находится на " + ChatColor.GREEN  + bedLocArray[0] + bedLocArray[1] + bedLocArray[2]);
-			}
-			catch(Exception e) {
-				sender.sendMessage(ChatColor.RED + "Ваша кровать не найдена!");
-			}
-			return true;
-		}
-		
-		if (cmd.getName().equalsIgnoreCase("vzlom")) {
-			player.kickPlayer("вы взломали сервер");
-			return true;
+		for (CommandBase command : commands) {
+			if (cmd.getName().equalsIgnoreCase(command.commandName())) { command.run(sender, cmd, lable, args); }
 		}
 		return true;
-	}
-	
-	private void sendCoordsMsg(String msg, Player reciver, boolean broadcast) {
-		if (broadcast == true) {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (ignoreList.contains(player)) continue;
-				player.sendMessage(msg);
-			} return;
-		}
-		if (!ignoreList.contains(reciver)) reciver.sendMessage(msg);
 	}
 }

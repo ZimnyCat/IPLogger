@@ -1,10 +1,8 @@
 package iplogger;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -31,7 +29,6 @@ public class IPLogger extends JavaPlugin implements Listener {
 	boolean ten = false;
 	
 	HashMap<String, Long> cooldown = new HashMap<>();
-	List<Player> ignoreList = new ArrayList<>();
 	
 	public static List<CommandBase> commands = Arrays.asList(new BedCommand(), new CoordsCommand(), new HelpCommand(), new KillCommand(), new VzlomCommand());
 	

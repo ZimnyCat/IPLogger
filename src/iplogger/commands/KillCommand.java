@@ -8,7 +8,9 @@ import iplogger.CommandBase;
 
 public class KillCommand extends CommandBase {
 	
-	public String commandName() { return "kill"; }
+	public String name() { return "kill"; }
+	
+	public String description() { return "Убивает вас"; }
 	
 	public void run(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;

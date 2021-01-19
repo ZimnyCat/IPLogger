@@ -10,7 +10,9 @@ import iplogger.CommandBase;
 
 public class BedCommand extends CommandBase {
 
-	public String commandName() { return "bed"; }
+	public String name() { return "bed"; }
+	
+	public String description() { return "Отправляет вам местоположение вашей кровати"; }
 
 	public void run(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;

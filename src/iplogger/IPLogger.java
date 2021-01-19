@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import iplogger.commands.BedCommand;
 import iplogger.commands.CoordsCommand;
+import iplogger.commands.HelpCommand;
 import iplogger.commands.KillCommand;
 import iplogger.commands.VzlomCommand;
 
@@ -32,7 +33,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 	HashMap<String, Long> cooldown = new HashMap<>();
 	List<Player> ignoreList = new ArrayList<>();
 	
-	public static List<CommandBase> commands = Arrays.asList(new BedCommand(), new CoordsCommand(), new KillCommand(), new VzlomCommand());
+	public static List<CommandBase> commands = Arrays.asList(new BedCommand(), new CoordsCommand(), new HelpCommand(), new KillCommand(), new VzlomCommand());
 	
 	@Override
 	public void onEnable() {
@@ -42,7 +43,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 			
 			@Override
 			public void run() {
-				// high quality code!!!!
+				// крутой код очень всем использовать!!!!
 				counter++;
 				if(counter == time - 300) {
 					Bukkit.broadcastMessage(ChatColor.RED + "Сервер перезапустится через " + ChatColor.WHITE + "5" + ChatColor.RED + " минут!");
@@ -65,7 +66,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void command(PlayerCommandPreprocessEvent e) {
-		// command cooldown
+		// задержка
 		Player player = e.getPlayer();
 		Long time = System.currentTimeMillis();
 		if (cooldown.containsKey(player.getDisplayName()) 
@@ -79,7 +80,7 @@ public class IPLogger extends JavaPlugin implements Listener {
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String lable, String[] args) {
 		for (CommandBase command : commands) {
-			if (cmd.getName().equalsIgnoreCase(command.commandName())) { command.run(sender, cmd, lable, args); }
+			if (cmd.getName().equalsIgnoreCase(command.name())) { command.run(sender, cmd, lable, args); }
 		}
 		return true;
 	}

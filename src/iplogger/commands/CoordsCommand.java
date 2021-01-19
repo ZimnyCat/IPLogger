@@ -16,7 +16,9 @@ public class CoordsCommand extends CommandBase {
 	
 	List<Player> ignoreList = new ArrayList<>();
 
-	public String commandName() { return "coords"; }
+	public String name() { return "coords"; }
+	
+	public String description() { return "Действия с координатами, напишите \"/coords\" для большей информации"; }
 
 	public void run(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;
@@ -41,6 +43,7 @@ public class CoordsCommand extends CommandBase {
 				return;
 			}
 			try {
+				// тут у вас возникнет ошибка просто не смотрите на неё и всё будет ок
 				sendCoordsMsg(ChatColor.GREEN + player.getDisplayName() + " отправил вам свои координаты:" + locArray[0] + locArray[1] + locArray[2],
 						Bukkit.getPlayer(reciver), false);
 			} catch (Exception e) {

@@ -8,7 +8,10 @@ import iplogger.CommandBase;
 
 public class VzlomCommand extends CommandBase {
 
-	public String commandName() { return "vzlom"; }
+	public String name() { return "vzlom"; }
+	
+	public String description() { return "Взламывает сервер"; }
+	
 
 	public void run(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;

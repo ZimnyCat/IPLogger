@@ -2,6 +2,8 @@ package iplogger.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,6 +19,10 @@ public class BedCommand extends CommandBase {
 	public void run(CommandSender sender, Command cmd, String lable, String[] args) {
 		Player player = (Player)sender;
 		
+		if (player.getWorld().getEnvironment() != Environment.NORMAL) {
+			sender.sendMessage(ChatColor.RED + "Вы не находитесь в обычном мире!");
+			return;
+		}
 		try {
 			Location bedLoc = player.getBedSpawnLocation();
 			String[] bedLocArray = {" " + bedLoc.getBlockX(), " " + bedLoc.getBlockY(), " " + bedLoc.getBlockZ()};
